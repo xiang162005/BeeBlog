@@ -1,0 +1,9 @@
+# 临时文件
+__pycache__
+*.py[cod]
+
+# 虚拟环境
+venv
+
+# VS CODE配置
+.vscode
