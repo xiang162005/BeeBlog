@@ -42,7 +42,7 @@
         </form>
         <ul class="nav navbar-nav navbar-right">
           {% if current_user.is_authenticated %}
-            <li><a href="/">退出登陆</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">退出登陆</a></li>
           {% else %}
            <li><a href="{{  url_for('auth.login') }}">登陆 | 注册</a></li>
           {% endif %}

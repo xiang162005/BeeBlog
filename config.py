@@ -4,6 +4,22 @@ import os
 # 基础环境配置
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
+    # 邮件服务器主机名或IP地址
+    MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.126.com')
+    # 邮件服务器端口
+    MAIL_PORT = int(os.environ.get('MAIL_PORT', '465'))
+    # 启用SSL
+    MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL', 'true').lower() in ['true', '1']
+    # 邮件账户的用户名
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    # 邮件账户的密码
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    # 邮件主题前缀
+    MAIL_SUBJECT_PREFIX = '[蜜蜂博客]'
+    # 邮件发件人
+    MAIL_SENDER = '蜜蜂博客(BeeBlog)<beeblog@126.com>'
+    # 邮件收件人（管理员邮箱）
+    MAIL_ADMIN = os.environ.get('MAIL_ADMIN')
     # 禁止数据库自动提交
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
