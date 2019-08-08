@@ -37,12 +37,12 @@ class DevelopmentConfig(Config):
 # 测试环境配置
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URI')
 
 
 # 生产环境配置
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
     
 
 

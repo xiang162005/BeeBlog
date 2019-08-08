@@ -15,5 +15,13 @@ def make_shell_context():
 
 
 # 配置单元测试命令
-pass
+@app.cli.command()
+def test():
+    """启动单元测试"""
+    import unittest
+    # 创建测试套件并从tests文件夹查找所有测试模块
+    tests = unittest.TestLoader().discover('tests')
+    # run()运行tests里的所有测试并将结果打印到stdout
+    # verbosity=2是指测试结果的输出的详细程度，有0-6级
+    unittest.TextTestRunner(verbosity=2).run(tests)
 
