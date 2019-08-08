@@ -1,7 +1,8 @@
 from flask import render_template, redirect, request, url_for, flash
 from flask_login import current_user, login_user, logout_user, login_required
 from . import auth
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, ChangePasswordForm, \
+        ResetPasswordRequestForm, ResetPasswordForm, ChangeEmailRequestForm
 from .. import db
 from ..models import User
 from ..email import send_email
@@ -95,3 +96,82 @@ def resend_confirmation():
 
 
 
+# 修改密码
+@auth.route('/changepassword', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.oldpassword.data):
+            current_user.password=form.newpassword.data
+            db.session.add(current_user)
+            db.session.commit()
+            flash('成功修改密码')
+            return redirect(url_for('main.index'))
+        flash('原密码错误，修改密码失败')
+    return render_template('auth/changepassword.html', form=form)
+
+
+# 请求重设密码
+@auth.route('/resetpasswordrequest', methods=['GET', 'POST'])
+def reset_password_request():
+    if not current_user.is_anonymous:
+        return redirect(url_for('main.index'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            token = user.generate_reset_password_token()
+            send_email(user.email, '重设密码',
+                       'auth/email/reset_password',
+                       user=user, token=token)
+            flash('一封重设密码的电子邮件已经发送至您的邮箱，请登陆邮箱确认')
+            return redirect(url_for('auth.login'))
+        flash('此邮箱还未注册，请先注册')
+    return render_template('auth/reset_password.html', form=form)
+
+
+# 重设密码
+@auth.route('/resetpassword/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if not current_user.is_anonymous:
+        return redirect(url_for('main.index'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        if User.confirm_reset_password(token, form.newpassword.data):
+            db.session.commit()
+            flash('成功重设密码')
+            return redirect(url_for('auth.login'))
+        else:
+            flash('重设密码验证失败，请重新申请')
+            return redirect(url_for('auth.reset_password_request'))
+    return render_template('auth/reset_password.html', form=form)
+
+
+# 请求修改邮箱
+@auth.route('/changeemailrequest', methods=['GET', 'POST'])
+@login_required
+def change_email_request():
+    form = ChangeEmailRequestForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.password.data):
+            token = current_user.generate_change_email_token(form.newemail.data)
+            send_email(form.newemail.data, '修改邮箱地址',
+                       'auth/email/change_email',
+                       user=current_user, token=token)
+            flash('一封确认新邮箱信息的电子邮件已发送至您的新邮箱，请登陆新邮箱确认')
+            return redirect(url_for('main.index'))
+        flash('密码错误，修改邮箱地址失败')
+    return render_template('auth/change_email.html', form=form)
+
+
+# 修改邮箱
+@auth.route('/changeemail/<token>')
+@login_required
+def change_email(token):
+    if current_user.change_email(token) == 1:
+        db.session.commit()
+        flash('您的邮箱地址已更改，请重新登陆')
+        return redirect(url_for('auth.login'))
+    flash('修改邮箱验证失败，请重新申请')
+    return redirect(url_for('main.index'))

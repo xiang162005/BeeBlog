@@ -43,7 +43,7 @@ class User(UserMixin, db.Model):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm': self.id}).decode('utf-8')
 
-    # 确认注册token
+    # 确认注册
     def confirm(self, token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
@@ -54,7 +54,50 @@ class User(UserMixin, db.Model):
             return False
         self.confirmed = True
         db.session.add(self)
-        return True    
+        return True
+    
+    # 生成重设密码token
+    def generate_reset_password_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'reset_password': self.id}).decode('utf-8')
+
+    # 确认重设密码
+    @staticmethod
+    def confirm_reset_password(token, new_password):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token.encode('utf-8'))
+        except:
+            return False
+        user = User.query.get(data.get('reset_password'))
+        if user is None:
+            return False
+        user.password = new_password
+        db.session.add(user)
+        return True
+
+    # 生成修改邮箱地址token
+    def generate_change_email_token(self, new_email, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'change_email': self.id, 'new_email': new_email}).decode('utf-8')
+
+    # 确认修改邮箱地址
+    def change_email(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token.encode('utf-8'))
+        except:
+            return False
+        if data.get('change_email') != self.id:
+            return False
+        new_email = data.get('new_email')
+        if new_email is None:
+            return False
+        if User.query.filter_by(email=new_email).first() is not None:
+            return False
+        self.email = new_email  
+        db.session.add(self)
+        return True
 
     def __repr__(self):
         return '<User {}>'.format(self.username) 

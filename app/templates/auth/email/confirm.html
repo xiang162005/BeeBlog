@@ -1,8 +1,8 @@
-<p>尊敬的{{ user.username }},</p>
+<p>尊敬的 {{ user.username }},</p>
 <p>欢迎来到<b>蜜蜂博客</b>!</p>
 <p>为了确认您的注册信息请<a href="{{ url_for('auth.confirm', token=token, _external=True) }}">点击此链接</a>完成注册。</p>
 <p>或者，您可以在浏览器的地址栏中粘贴以下链接：</p>
 <p>{{ url_for('auth.confirm', token=token, _external=True) }}</p>
-
+<br>
 <p>蜜蜂博客团队</p>
 <p><small>提醒: 请勿回复此邮件。</small></p>

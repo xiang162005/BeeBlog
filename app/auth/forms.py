@@ -37,3 +37,42 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():
             raise ValidationError('用户名已存在')
+
+
+# 修改密码表单
+class ChangePasswordForm(FlaskForm):
+    oldpassword = PasswordField('原密码', validators=[DataRequired(), Length(1, 64)])
+    newpassword = PasswordField('新密码', validators=[
+        DataRequired(), EqualTo('newpassword2', message='两次密码不一致')])
+    newpassword2 = PasswordField('确认新密码', validators=[DataRequired()])
+    submit = SubmitField('修改密码')
+
+
+# 请求重设密码表单
+class ResetPasswordRequestForm(FlaskForm):
+    email = StringField('邮箱', validators=[DataRequired(), Length(1, 64),
+                                            Email()])
+    submit = SubmitField('发送重设密码邮件')
+
+
+# 重设密码表单
+class ResetPasswordForm(FlaskForm):
+    newpassword = PasswordField('新密码', validators=[
+        DataRequired(), EqualTo('newpassword2', message='两次密码不一致')])
+    newpassword2 = PasswordField('确认新密码', validators=[DataRequired()])
+    submit = SubmitField('重设密码')
+
+
+# 请求修改邮箱
+class ChangeEmailRequestForm(FlaskForm):
+    newemail = StringField('新的邮箱', validators=[DataRequired(), Length(1, 64),
+                                                  Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('修改邮箱')
+    
+    # 验证邮箱是否已被注册
+    def validate_newemail(self, field):
+        if User.query.filter_by(email=field.data).first():
+            raise ValidationError('邮箱已被注册')
+
+    
