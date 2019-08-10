@@ -69,7 +69,6 @@ def confirm(token):
     if current_user.confirmed:
         return redirect(url_for('main.index'))
     if current_user.confirm(token):
-        db.session.commit()
         flash('成功确认注册信息，您的账户已被激活')
     else:
         flash('确认注册信息失败')
@@ -139,7 +138,6 @@ def reset_password(token):
     form = ResetPasswordForm()
     if form.validate_on_submit():
         if User.confirm_reset_password(token, form.newpassword.data):
-            db.session.commit()
             flash('成功重设密码')
             return redirect(url_for('auth.login'))
         else:
@@ -169,8 +167,7 @@ def change_email_request():
 @auth.route('/changeemail/<token>')
 @login_required
 def change_email(token):
-    if current_user.change_email(token) == 1:
-        db.session.commit()
+    if current_user.change_email(token):
         flash('您的邮箱地址已更改，请重新登陆')
         return redirect(url_for('auth.login'))
     flash('修改邮箱验证失败，请重新申请')
