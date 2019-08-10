@@ -2,7 +2,8 @@ from flask import render_template, redirect, request, url_for, flash
 from flask_login import current_user, login_user, logout_user, login_required
 from . import auth
 from .forms import LoginForm, RegistrationForm, ChangePasswordForm, \
-        ResetPasswordRequestForm, ResetPasswordForm, ChangeEmailRequestForm
+    ResetPasswordRequestForm, ResetPasswordForm, ChangeEmailRequestForm, \
+    EditProfileForm    
 from .. import db
 from ..models import User
 from ..email import send_email
@@ -10,11 +11,14 @@ from ..email import send_email
 
 @auth.before_app_request
 def before_request():
-    if current_user.is_authenticated \
-            and not current_user.confirmed \
-            and request.blueprint != 'auth' \
-            and request.endpoint != 'static':
-        return redirect(url_for('auth.unconfirmed'))
+    if current_user.is_authenticated:
+        # 更新用户上次登陆时间
+        current_user.update_last_login()
+        # 如果用户还未确认注册信息，则跳转到未确认注册界面
+        if not current_user.confirmed \
+                and request.blueprint != 'auth' \
+                and request.endpoint != 'static':
+            return redirect(url_for('auth.unconfirmed'))
 
 
 # 登陆
@@ -172,3 +176,22 @@ def change_email(token):
         return redirect(url_for('auth.login'))
     flash('修改邮箱验证失败，请重新申请')
     return redirect(url_for('main.index'))
+
+
+# 个人资料
+@auth.route('/editprofile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm()
+    if form.validate_on_submit():
+        current_user.name = form.name.data
+        current_user.location = form.location.data
+        current_user.about_me = form.about_me.data
+        db.session.add(current_user)
+        db.session.commit()
+        flash('您的个人资料已更新')
+        return redirect(url_for('main.user', username=current_user.username))
+    form.name.data = current_user.name
+    form.location.data = current_user.location
+    form.about_me.data = current_user.about_me
+    return render_template('auth/edit_profile.html', form=form)

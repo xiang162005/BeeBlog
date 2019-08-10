@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -101,6 +102,16 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     # 确认注册状态
     confirmed = db.Column(db.Boolean, default=False)
+    # 用户昵称
+    name = db.Column(db.String(64))
+    # 用户地址
+    location = db.Column(db.String(64))
+    # 个人简介
+    about_me = db.Column(db.Text())
+    # 注册时间
+    member_since = db.Column(db.DateTime(), default=datetime.utcnow)
+    # 上次登陆时间
+    last_login = db.Column(db.DateTime(), default=datetime.utcnow)
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -195,6 +206,12 @@ class User(UserMixin, db.Model):
     # 检查用户是否为管理员
     def is_administrator(self):
         return self.can(Permission.ADMIN)
+
+    # 更新上次登陆时间
+    def update_last_login(self):
+        self.last_login = datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
 
     def __repr__(self):
         return '<User {}>'.format(self.username) 
