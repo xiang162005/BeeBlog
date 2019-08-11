@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, SubmitField, TextAreaField, \
-    SelectField
+    SelectField, FileField
 from wtforms.validators import DataRequired, Length, Email, Regexp
 from wtforms import ValidationError
 from ..models import User, Role
@@ -17,6 +17,8 @@ class EditProfileAdminForm(FlaskForm):
         '并且第一个字符必须是英文字符。')])
     confirmed = BooleanField('确认注册')
     role = SelectField('角色', coerce=int)
+    # 头像
+    avatar = FileField('头像')
     name = StringField('昵称', validators=[Length(0, 64)])
     location = StringField('所在地', validators=[Length(0, 64)])
     about_me = TextAreaField('个人简介')

@@ -22,6 +22,10 @@ class Config:
     MAIL_ADMIN = os.environ.get('MAIL_ADMIN')
     # 禁止数据库自动提交
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # 上传头像路径
+    AVATAR_DEST = os.path.abspath(os.path.join(os.getcwd(),"app/static/avatar"))
+    # 上传头像类型限制
+    ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
 
     @staticmethod
     def init_app(app):

@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin
@@ -112,6 +113,8 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     # 上次登陆时间
     last_login = db.Column(db.DateTime(), default=datetime.utcnow)
+    # 用户头像
+    avatar = db.Column(db.String(128))
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)

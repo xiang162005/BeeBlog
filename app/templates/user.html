@@ -1,29 +1,38 @@
 {% extends "base.html" %}
-{% block title %}蜜蜂博客 -个人主页- {{ user.username }}{% endblock %}
+{% block title %}蜜蜂博客 -个人主页-{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
-<h1>{{ user.userename }}</h1>
-{% if current_user.is_administrator() %}
+  {% if current_user.is_administrator() %}
     <a class="btn btn-danger" href="{{ url_for('main.edit_profile_admin', id=user.id) }}">
         编辑用户资料 [管理员]
     </a>
-{% endif %}
-{% if user.name or user.location %}
-<p>
-    {% if user.name %}昵称：{{ user.name }}{% endif %}
-    <br>
-    {% if user.location %}所在地：{{ user.location }}{% endif %}
-</p>
-{% endif %}
-{% if current_user.is_administrator() %}
-<p><a href="mailto:{{ user.email }}">邮箱：{{ user.email }}</a></p>
-{% endif %}
-{% if user.about_me %}<p>个人简介：{{ user.about_me }}</p>{% endif %}
-<p>
-    注册时间： {{ moment(user.member_since).format('L') }}
-    <br>
-    上次登陆时间： {{ moment(user.last_login).fromNow() }}
-</p>
+  {% endif %}
+  <br>
+  {% if user.avatar %}
+  <!-- time用作查询字符串，强制刷新头像 -->
+  <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename=user.avatar, time=time) }}"" >
+  {% else %}
+  <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename='avatar/default.jpg') }}">
+  {% endif %}
+  <div class="profile-header">
+    <h1>{{ user.username }}</h1>
+    {% if user.name or user.location %}
+    <p>
+      {% if user.name %}昵称：{{ user.name }}{% endif %}
+      <br>
+      {% if user.location %}所在地：{{ user.location }}{% endif %}
+    </p>
+    {% endif %}
+    {% if current_user.is_administrator() %}
+    <p><a href="mailto:{{ user.email }}">邮箱：{{ user.email }}</a></p>
+    {% endif %}
+    {% if user.about_me %}<p>个人简介：{{ user.about_me }}</p>{% endif %}
+    <p>
+      注册时间： {{ moment(user.member_since).format('L') }}
+      <br>
+      上次登陆时间： {{ moment(user.last_login).fromNow() }}
+    </p>
+  </div>
 </div>
 {% endblock %}

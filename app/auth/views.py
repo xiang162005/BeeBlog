@@ -1,4 +1,6 @@
-from flask import render_template, redirect, request, url_for, flash
+import os
+from flask import render_template, redirect, request, url_for, flash, \
+    current_app
 from flask_login import current_user, login_user, logout_user, login_required
 from . import auth
 from .forms import LoginForm, RegistrationForm, ChangePasswordForm, \
@@ -187,11 +189,24 @@ def edit_profile():
         current_user.name = form.name.data
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
+        # 提交用户头像
+        avatar = request.files['avatar']
+        fname = avatar.filename
+        flag = '.' in fname and \
+            fname.rsplit('.', 1)[1] in current_app.config['ALLOWED_EXTENSIONS']
+        if not flag:
+            flash('文件类型错误')
+            return redirect(url_for('main.user', username=current_user.username))
+        # /static/avatar/ 文件夹里的保存的用户头像文件名
+        flname = '/' + current_user.username + '.' + fname.rsplit('.', 1)[1]
+        avatar.save(os.path.abspath(os.path.join(os.getcwd(),"app/static/avatar")) + flname)
+        current_user.avatar = 'avatar' + flname
         db.session.add(current_user)
         db.session.commit()
         flash('您的个人资料已更新')
         return redirect(url_for('main.user', username=current_user.username))
+    form.avatar.data = current_user.avatar
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
-    return render_template('auth/edit_profile.html', form=form)
+    return render_template('auth/edit_profile.html', form=form, user=current_user)

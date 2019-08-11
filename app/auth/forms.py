@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, \
-    TextAreaField
+    TextAreaField, FileField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from ..models import User
@@ -79,6 +79,8 @@ class ChangeEmailRequestForm(FlaskForm):
 
 # 个人资料编辑器
 class EditProfileForm(FlaskForm):
+    # 头像
+    avatar = FileField('头像')
     name = StringField('昵称', validators=[Length(0, 64)])
     location = StringField('所在地', validators=[Length(0, 64)])
     about_me = TextAreaField('个人简介')
