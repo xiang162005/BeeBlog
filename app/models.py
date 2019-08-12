@@ -1,7 +1,9 @@
+import bleach
 import os
 from datetime import datetime
 from flask import current_app
 from flask_login import UserMixin, AnonymousUserMixin
+from markdown import markdown
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from . import db, login_manager
@@ -23,12 +25,12 @@ class Permission:
 # 角色表
 class Role(db.Model):
     __tablename__ = 'roles'
-    # 角色ID
+    # 角色ID（主键）
     id = db.Column(db.Integer, primary_key=True)
     # 角色名称
     name = db.Column(db.String(64), unique=True)
     # 每个角色包含哪些用户
-    users = db.relationship('User', backref='role')
+    users = db.relationship('User', backref='role', lazy='dynamic')
     # 是否为默认角色，只有默认角色为True，其余均为False
     default = db.Column(db.Boolean, default=False, index=True)
     # 角色权限
@@ -91,13 +93,13 @@ class Role(db.Model):
 # 用户表
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
-    # 用户ID
+    # 用户ID（主键）
     id = db.Column(db.Integer, primary_key=True)
     # 用户名
     username = db.Column(db.String(64), unique=True, index=True)
     # 邮箱
     email = db.Column(db.String(64), unique=True, index=True)
-    # 用户角色ID
+    # 用户角色ID（外键）
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     # 用户密码hash值
     password_hash = db.Column(db.String(128))
@@ -113,8 +115,10 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     # 上次登陆时间
     last_login = db.Column(db.DateTime(), default=datetime.utcnow)
-    # 用户头像
-    avatar = db.Column(db.String(128))
+    # 用户头像名称
+    avatar = db.Column(db.String(128), default='default.jpg')
+    # 用户发表的文章
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -230,10 +234,42 @@ class AnonymousUser(AnonymousUserMixin):
     # 检查匿名用户是否为管理员
     def is_administrator(self):
         return False
-
+       
 
 # 匿名用户为AnonymousUser类
 login_manager.anonymous_user = AnonymousUser
+
+
+# 文章表
+class Post(db.Model):
+    __tablename__ = 'posts'
+    # 文章id（主键）
+    id = db.Column(db.Integer, primary_key=True)
+    # 文章主体
+    body = db.Column(db.Text)
+    # 文章主体html
+    body_html = db.Column(db.Text)
+    # 创建时间
+    ctime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    # 作者id（外键）
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    # 把Markdown文本转化成html
+    @staticmethod
+    # target, value, oldvalue, initiator均由db.event.listen的set参数自行传人
+    def on_change_body(target, value, oldvalue, initiator):
+        # 允许存在的html标签
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        # 把Markdown文本转换为html
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
+
+
+# 监听程序，Post.body有改动就运行Post.on_change_body
+db.event.listen(Post.body, 'set', Post.on_change_body)
 
 
 @login_manager.user_loader

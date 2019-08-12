@@ -34,7 +34,7 @@
           {% if current_user.is_authenticated %}
             <li><a href="{{ url_for('main.user', username=current_user.username) }}">个人主页</a></li>
           {% endif %}
-          <li><a href="#">写文章</a></li>
+          <li><a href="{{ url_for('main.write') }}">写文章</a></li>
         </ul>
         <form class="navbar-form navbar-left">
           <div class="form-group">

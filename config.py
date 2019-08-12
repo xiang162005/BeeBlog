@@ -26,6 +26,8 @@ class Config:
     AVATAR_DEST = os.path.abspath(os.path.join(os.getcwd(),"app/static/avatar"))
     # 上传头像类型限制
     ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
+    # 每页显示的文章数量
+    POSTS_PER_PAGE = 10
 
     @staticmethod
     def init_app(app):

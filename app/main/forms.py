@@ -1,3 +1,4 @@
+from flask_pagedown.fields import PageDownField
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, SubmitField, TextAreaField, \
     SelectField, FileField
@@ -39,3 +40,9 @@ class EditProfileAdminForm(FlaskForm):
         if field.data != self.user.username and \
                 User.query.filter_by(username=field.data).first():
             raise ValidationError('用户名已存在')
+
+
+# 写文章表单
+class PostForm(FlaskForm):
+    body = PageDownField('开始你的创作...', validators=[DataRequired()])
+    submit = SubmitField('保存')
