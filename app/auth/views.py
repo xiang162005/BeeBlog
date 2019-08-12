@@ -198,14 +198,15 @@ def edit_profile():
             flash('文件类型错误')
             return redirect(url_for('main.user', username=current_user.username))
         # /static/avatar/ 文件夹里的保存的用户头像文件名
-        flname = '/' + current_user.username + '.' + fname.rsplit('.', 1)[1]
-        avatar.save(os.path.abspath(os.path.join(os.getcwd(),"app/static/avatar")) + flname)
-        current_user.avatar = 'avatar' + flname
+        flname = current_user.username + '.' + fname.rsplit('.', 1)[1]
+        # 保存头像到指定路径
+        avatar.save(os.path.join(current_app.config['AVATAR_DEST'], flname))
+        current_user.avatar = flname
         db.session.add(current_user)
         db.session.commit()
         flash('您的个人资料已更新')
         return redirect(url_for('main.user', username=current_user.username))
-    form.avatar.data = current_user.avatar
+    form.avatar.data = os.path.join(current_app.config['AVATAR_DEST'], current_user.avatar)
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me

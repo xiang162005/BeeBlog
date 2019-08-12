@@ -10,10 +10,10 @@
   {% endif %}
   <br>
   {% if user.avatar %}
-  <!-- time用作查询字符串，强制刷新头像 -->
-  <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename=user.avatar, time=time) }}"" >
+  <!-- mtime用作查询字符串，修改头像图像时强制刷新头像 -->
+  <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename='avatar/'+user.avatar, mtime=mtime) }}"" >
   {% else %}
-  <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename='avatar/default.jpg') }}">
+  <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename='avatar/default.jpg', mtime=mtime) }}">
   {% endif %}
   <div class="profile-header">
     <h1>{{ user.username }}</h1>

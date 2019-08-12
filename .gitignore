@@ -1,9 +1,12 @@
-# 临时文件
+﻿# 临时文件
 __pycache__
 *.py[cod]
 
 # 虚拟环境
-venv
+/venv
 
 # VS CODE配置
-.vscode
+/.vscode
+
+# 用户头像存储目录
+/app/static/avatar

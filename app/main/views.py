@@ -19,8 +19,10 @@ def index():
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    # time用作查询字符串，来强制刷新头像图片
-    return render_template('user.html', user=user, time=str(datetime.now()))
+    # 文件头像的修改时间
+    mtime = str(os.path.getmtime(os.path.join(current_app.config['AVATAR_DEST'], user.avatar)))
+    # mtime用作查询字符串，头像修改时，强制刷新头像图片
+    return render_template('user.html', user=user, mtime=mtime)
 
 
 # 管理员编辑用户个人资料界面
@@ -46,13 +48,15 @@ def edit_profile_admin(id):
             flash('文件类型错误')
             return redirect(url_for('main.user', username=user.username))
         # /static/avatar/ 文件夹里的保存的用户头像文件名
-        flname = '/' + user.username + '.' + fname.rsplit('.', 1)[1]
-        avatar.save(os.path.abspath(os.path.join(os.getcwd(),"app/static/avatar")) + flname)
-        user.avatar = 'avatar' + flname
+        flname = user.username + '.' + fname.rsplit('.', 1)[1]
+        # 保存头像到指定路径
+        avatar.save(os.path.join(current_app.config['AVATAR_DEST'], flname))
+        user.avatar = flname
         db.session.add(user)
         db.session.commit()
         flash('用户的个人资料已更新')
         return redirect(url_for('main.user', username=user.username))
+    form.avatar.data = os.path.join(current_app.config['AVATAR_DEST'], user.avatar)
     form.email.data = user.email
     form.username.data = user.username
     form.confirmed.data = user.confirmed
