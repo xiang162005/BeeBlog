@@ -90,6 +90,21 @@ class Role(db.Model):
     def __repr__(self):
         return '<Role {}>'.format(self.name)
 
+
+# 关注与被关注 关联表
+class Follow(db.Model):
+    __tablename__ = 'follows'
+    # 关注者id
+    follower_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+                            primary_key=True)
+    # 被关注者id
+    followed_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+                            primary_key=True)
+    # 关注时间
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+
 # 用户表
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -119,6 +134,20 @@ class User(UserMixin, db.Model):
     avatar = db.Column(db.String(128), default='default.jpg')
     # 用户发表的文章
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    # 关注者（关注我的人）
+    follower = db.relationship('Follow',
+                                foreign_keys=[Follow.followed_id],
+                                backref=db.backref('followed', lazy='joined'),
+                                lazy='dynamic',
+                                # 启动所有层叠选项，删除孤儿记录
+                                cascade='all, delete-orphan')
+    # 被关注者（被我关注的人）
+    followed = db.relationship('Follow',
+                               foreign_keys=[Follow.follower_id],
+                               backref=db.backref('follower', lazy='joined'),
+                               lazy='dynamic',
+                               # 启动所有层叠选项，删除孤儿记录
+                               cascade='all, delete-orphan')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -219,6 +248,38 @@ class User(UserMixin, db.Model):
         self.last_login = datetime.utcnow()
         db.session.add(self)
         db.session.commit()
+
+    # 关注用户
+    def follow(self, user):
+        if not self.is_following(user):
+            f = Follow(follower=self, followed=user)
+            db.session.add(f)
+
+    # 取消关注用户
+    def unfollow(self, user):
+        f = self.followed.filter_by(followed_id=user.id).first()
+        if f:
+            db.session.delete(f)
+
+    # 我是否关注了用户
+    def is_following(self, user):
+        if user.id is None:
+            return False
+        return self.followed.filter_by(
+            followed_id=user.id).first() is not None
+
+    # 用户是否关注了我
+    def is_followed_by(self, user):
+        if user.id is None:
+            return False
+        return self.followers.filter_by(
+            follower_id=user.id).first() is not None
+
+    # 我关注的用户所写的文章
+    @property
+    def followed_posts(self):
+        return Post.query.join(Follow, Follow.followed_id == Post.author_id)\
+            .filter(Follow.follower_id == self.id)
 
     def __repr__(self):
         return '<User {}>'.format(self.username) 

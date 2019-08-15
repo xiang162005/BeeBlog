@@ -28,6 +28,8 @@ class Config:
     ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
     # 每页显示的文章数量
     POSTS_PER_PAGE = 10
+    # 每页显示的粉丝数量
+    FOLLOWERS_PER_PAGE = 20
 
     @staticmethod
     def init_app(app):
