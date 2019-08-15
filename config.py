@@ -30,6 +30,8 @@ class Config:
     POSTS_PER_PAGE = 10
     # 每页显示的粉丝数量
     FOLLOWERS_PER_PAGE = 20
+    # 每页显示的评论数量
+    COMMENTS_PER_PAGE = 10
 
     @staticmethod
     def init_app(app):

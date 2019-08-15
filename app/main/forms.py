@@ -46,3 +46,9 @@ class EditProfileAdminForm(FlaskForm):
 class PostForm(FlaskForm):
     body = PageDownField('开始你的创作...', validators=[DataRequired()])
     submit = SubmitField('保存')
+
+
+# 写评论表单
+class CommentForm(FlaskForm):
+    body = StringField('', validators=[DataRequired()])
+    submit = SubmitField('保存')

@@ -4,9 +4,9 @@ from flask import render_template, redirect, request, url_for, flash, \
     current_app
 from flask_login import current_user, login_required
 from . import main
-from .forms import EditProfileAdminForm, PostForm
+from .forms import EditProfileAdminForm, PostForm, CommentForm
 from .. import db
-from ..models import User, Permission, Post
+from ..models import User, Permission, Post, Comment
 from ..decorators import admin_required, permission_required
 
 # 网站主页
@@ -92,10 +92,30 @@ def write():
 
 
 # 显示文章界面
-@main.route('/post/<int:id>')
+@main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     post = Post.query.get_or_404(id)
-    return render_template('post.html', posts=[post])
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.body.data,
+                          post=post,
+                          author=current_user._get_current_object())
+        db.session.add(comment)
+        db.session.commit()
+        flash('成功发表评论')
+        # page=-1为最后一页评论，以便显示刚提交的评论
+        return redirect(url_for('main.post', id=post.id, page=-1))
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        # 计算最后一页
+        page = (post.comments.count() - 1) // \
+            current_app.config['COMMENTS_PER_PAGE'] + 1
+    pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(
+        page, per_page=current_app.config['COMMENTS_PER_PAGE'],
+        error_out=False)
+    comments = pagination.items
+    return render_template('post.html', posts=[post], form=form,
+                            comments=comments, pagination=pagination)
 
 
 # 编辑文章

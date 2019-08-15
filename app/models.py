@@ -148,6 +148,8 @@ class User(UserMixin, db.Model):
                                lazy='dynamic',
                                # 启动所有层叠选项，删除孤儿记录
                                cascade='all, delete-orphan')
+    # 评论
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -314,6 +316,8 @@ class Post(db.Model):
     ctime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     # 作者id（外键）
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # 评论
+    comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
     # 把Markdown文本转化成html
     @staticmethod
@@ -331,6 +335,30 @@ class Post(db.Model):
 
 # 监听程序，Post.body有改动就运行Post.on_change_body
 db.event.listen(Post.body, 'set', Post.on_change_body)
+
+
+# 评论表
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    disabled = db.Column(db.Boolean)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+    @staticmethod
+    def on_change_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i',
+                         'strong']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
+
+
+# 监听程序，Comment.body有改动就运行Comment.on_change_body
+db.event.listen(Comment.body, 'set', Comment.on_change_body)
 
 
 @login_manager.user_loader
