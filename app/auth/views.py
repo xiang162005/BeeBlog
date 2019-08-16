@@ -9,6 +9,7 @@ from .forms import LoginForm, RegistrationForm, ChangePasswordForm, \
 from .. import db
 from ..models import User
 from ..email import send_email
+from ..image import create_avatar
 
 
 @auth.before_app_request
@@ -191,17 +192,9 @@ def edit_profile():
         current_user.about_me = form.about_me.data
         # 提交用户头像
         avatar = request.files['avatar']
-        fname = avatar.filename
-        flag = '.' in fname and \
-            fname.rsplit('.', 1)[1] in current_app.config['ALLOWED_EXTENSIONS']
-        if not flag:
+        if not create_avatar(avatar):
             flash('文件类型错误')
             return redirect(url_for('main.user', username=current_user.username))
-        # /static/avatar/ 文件夹里的保存的用户头像文件名
-        flname = current_user.username + '.' + fname.rsplit('.', 1)[1]
-        # 保存头像到指定路径
-        avatar.save(os.path.join(current_app.config['AVATAR_DEST'], flname))
-        current_user.avatar = flname
         db.session.add(current_user)
         db.session.commit()
         flash('您的个人资料已更新')
