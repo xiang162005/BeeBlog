@@ -79,6 +79,7 @@ def edit_profile_admin(id):
 
 # 写文章
 @main.route('/write', methods=['GET', 'POST'])
+@login_required
 def write():
     form = PostForm()
     if current_user.can(Permission.WRITE) and form.validate_on_submit():
