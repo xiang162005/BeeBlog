@@ -26,8 +26,8 @@ def create_avatar(avatar):
     # 裁剪成正方形的头像
     cr_im = im.crop((left, top, right, bottom))
     # 缩放后的头像
-    re_im = cr_im.resize((80, 80))  
-    # /static/avatar/ 文件夹里的保存的用户头像文件名
+    re_im = cr_im.resize((50, 50))  
+    # 头像的文件名
     flname = current_user.username + '.jpg'
     # 保存头像到指定路径
     re_im.save(os.path.join(current_app.config['AVATAR_DEST'], flname))

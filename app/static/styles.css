@@ -1,13 +1,31 @@
 .navbar-brand {
-    font-family: cursive;
-    font-weight: bold;
-    font-size: 20px;
+  font-family: cursive;
+  font-weight: bold;
+  font-size: 20px;
 }
 body {  
-    padding-top: 70px; 
-    padding-bottom: 70px;
+  padding-top: 70px; 
+  padding-bottom: 70px;
 }
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
   color: #FF6600;
+}
+.self-form {
+  margin-left: 35%;
+  margin-right: 35%;
+  margin-top: 5%;
+}
+.self-form-head {
+  margin-left: 30px;
+}
+.self-form-head-text {
+  color: #777; 
+  font-size: 30px;
+}
+.self-form-head-text:hover {
+  color:  #FF6600; 
+}
+.self-form-body {
+  margin-top: 40px;
 }
