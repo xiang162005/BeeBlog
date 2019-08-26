@@ -32,3 +32,81 @@ body {
 .self-form-body {
   margin-top: 40px;
 }
+ul.posts {
+  list-style-type: none;
+  padding: 0px;
+  margin: 1px 0px 0px 12%;
+  width: 60%;
+}
+div.post-list-content {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+}
+div.post-list-left {
+  width: 80%;
+}
+div.post-list-title {
+  font-size: 20px;
+  font-weight: bold;
+  font-family: cursive;
+}
+a.post-list-title {
+  color: black;
+}
+div.post-list-abstract {
+    margin-top: 5px;
+    color: #777;
+    width: 90%;
+}
+div.post-list-mid {
+  margin-top: 30px;
+}
+div.post-list-mid img.auth-img {
+  border-radius: 50%;
+  width: 100%;
+}
+div.post-list-right a.post-list-auth {
+  color: #777;
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+div.post-list-right {
+  margin-left: 10px;
+  margin-top: 20px;
+  margin-right: 10px;
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+}
+div.post-list-right a.post-list-right-link {
+  color: #777;
+}
+div.post-list-right a.post-list-right-link:hover {
+  color: black;
+}
+div.post-list-right span.post-list-right-text {
+  font-size: 15px;
+  color: #777;
+}
+div.post-list-footer {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid #777;
+}
+div.post-list-footer span.post-list-footer-text {
+  font-size: 17px;
+  color: #777;
+}
+a.post-list-footer-link {
+  color: #777;
+  margin-bottom: 20px;
+}
+a.post-list-footer-link:hover {
+  color: black;
+}
+div.post-list-date {
+  margin-left: 330px;
+  color: #777;
+}

@@ -3,7 +3,7 @@
     <li class="comment">
         <div class="comment-thumbnail">
             <a href="{{ url_for('main.user', username=comment.author.username) }}">
-                <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename='avatar/'+comment.author.avatar) }}">
+                <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename='avatar/'+comment.author.s_avatar) }}">
             </a>
         </div>
         <div class="comment-content">

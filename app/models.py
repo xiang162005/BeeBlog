@@ -310,16 +310,24 @@ class Post(db.Model):
     __tablename__ = 'posts'
     # 文章id（主键）
     id = db.Column(db.Integer, primary_key=True)
+    # 文章标题
+    title = db.Column(db.String(64))
     # 文章主体
     body = db.Column(db.Text)
     # 文章主体html
     body_html = db.Column(db.Text)
+    # 文章摘要
+    abstract = db.Column(db.String(64))
     # 创建时间
     ctime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     # 作者id（外键）
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # 评论
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    # 观看数
+    views = db.Column(db.Integer, default=0)
+    # 点赞数
+    likes = db.Column(db.Integer, default=0)
 
     # 把Markdown文本转化成html
     @staticmethod

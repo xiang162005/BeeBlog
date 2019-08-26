@@ -83,8 +83,15 @@ def edit_profile_admin(id):
 def write():
     form = PostForm()
     if current_user.can(Permission.WRITE) and form.validate_on_submit():
-        post = Post(body=form.body.data,
+        post = Post(title=form.title.data, body=form.body.data,
                     author=current_user._get_current_object())
+        # 如果文章过短，则摘要为全文，否则在摘要最后加上省略号
+        try:
+            form.body.data[60]
+        except IndexError:
+            post.abstract = form.body.data
+        else:
+            post.abstract = form.body.data[0:60] + '...'
         db.session.add(post)
         db.session.commit()
         flash('保存成功')
@@ -102,8 +109,11 @@ def post(id):
                           post=post,
                           author=current_user._get_current_object())
         db.session.add(comment)
-        db.session.commit()
         flash('成功发表评论')
+        # 抵消重定向导致的文章被观看数+1
+        post.views -= 1
+        db.session.add(post)
+        db.session.commit()
         # page=-1为最后一页评论，以便显示刚提交的评论
         return redirect(url_for('main.post', id=post.id, page=-1))
     page = request.args.get('page', 1, type=int)
@@ -115,7 +125,10 @@ def post(id):
         page, per_page=current_app.config['COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
-    return render_template('post.html', posts=[post], form=form,
+    post.views += 1
+    db.session.add(post)
+    db.session.commit()
+    return render_template('post.html', posts=[post], form=form, title=post.title,
                             comments=comments, pagination=pagination)
 
 
@@ -129,11 +142,14 @@ def edit(id):
         abort(403)
     form = PostForm()
     if form.validate_on_submit():
+        post.title = form.title.data
         post.body = form.body.data
+        post.abstract = form.body.data[0:64]
         db.session.add(post)
         db.session.commit()
         flash('文章已更新')
         return redirect(url_for('main.post', id=post.id))
+    form.title.data = post.title
     form.body.data = post.body
     return render_template('edit_post.html', form=form)
 
@@ -226,4 +242,6 @@ def followed_posts():
         error_out=False)
     posts = pagination.items
     return render_template('followed_posts.html', posts=posts, pagination=pagination)
+
+
     
