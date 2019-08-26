@@ -68,7 +68,7 @@ class ResetPasswordForm(FlaskForm):
 class ChangeEmailRequestForm(FlaskForm):
     newemail = StringField('新的邮箱', validators=[DataRequired(), Length(1, 64),
                                                   Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField('密码', validators=[DataRequired()])
     submit = SubmitField('修改邮箱')
     
     # 验证邮箱是否已被注册

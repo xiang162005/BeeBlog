@@ -29,7 +29,7 @@ def index():
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     # 用户头像的修改时间
-    mtime = str(os.path.getmtime(os.path.join(current_app.config['AVATAR_DEST'], user.avatar)))
+    mtime = str(os.path.getmtime(os.path.join(current_app.config['AVATAR_DEST'], user.b_avatar)))
     posts = Post.query.filter_by(author=current_user._get_current_object()).order_by(Post.ctime.desc()).limit(5).all()
     # mtime用作查询字符串，头像修改时，强制刷新头像图片
     return render_template('user.html', user=user, mtime=mtime, posts=posts)

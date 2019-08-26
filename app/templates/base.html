@@ -58,10 +58,7 @@
               <ul class="dropdown-menu">
                 <li><a href="{{  url_for('auth.edit_profile') }}">编辑个人资料</a></li>
                 <li><a href="{{  url_for('auth.change_password') }}">修改密码</a></li>
-                <li><a href="{{ url_for('auth.change_email_request') }}">修改邮箱地址</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#">Separated link</a></li>
+                <li><a href="{{ url_for('auth.change_email_request') }}">更换邮箱</a></li>
               </ul>
             </li>
             <li><a href="{{ url_for('auth.logout') }}">退出登陆</a></li>

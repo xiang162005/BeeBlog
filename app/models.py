@@ -130,8 +130,10 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     # 上次登陆时间
     last_login = db.Column(db.DateTime(), default=datetime.utcnow)
-    # 用户头像名称
-    avatar = db.Column(db.String(128), default='default.jpg')
+    # 用户大头像路径
+    b_avatar = db.Column(db.String(128), default='default/big.jpg')
+    # 用户小头像路径
+    s_avatar = db.Column(db.String(128), default='default/small.jpg')
     # 用户发表的文章
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     # 关注者（关注我的人）

@@ -199,7 +199,7 @@ def edit_profile():
         db.session.commit()
         flash('您的个人资料已更新')
         return redirect(url_for('main.user', username=current_user.username))
-    form.avatar.data = os.path.join(current_app.config['AVATAR_DEST'], current_user.avatar)
+    form.avatar.data = os.path.join(current_app.config['AVATAR_DEST'], current_user.b_avatar)
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me

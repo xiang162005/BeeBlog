@@ -10,7 +10,7 @@
   {% endif %}
   <br>
   <!-- mtime用作查询字符串，修改头像图像时强制刷新头像 -->
-  <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename='avatar/'+user.avatar, mtime=mtime) }}"" >
+  <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename='avatar/'+user.b_avatar, mtime=mtime) }}"" >
   <div class="profile-header">
     <h1>{{ user.username }}</h1>
     {% if user.name or user.location %}

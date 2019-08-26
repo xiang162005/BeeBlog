@@ -25,11 +25,18 @@ def create_avatar(avatar):
     bottom =  h // 2  + half
     # 裁剪成正方形的头像
     cr_im = im.crop((left, top, right, bottom))
-    # 缩放后的头像
-    re_im = cr_im.resize((50, 50))  
-    # 头像的文件名
-    flname = current_user.username + '.jpg'
-    # 保存头像到指定路径
-    re_im.save(os.path.join(current_app.config['AVATAR_DEST'], flname))
-    current_user.avatar = flname
+    # 缩放后的大头像
+    b_im = cr_im.resize((128, 128))
+    # 缩放后的小头像
+    s_im = cr_im.resize((50, 50))  
+    # 大头像的文件名
+    b_flname = current_user.username + '/big.jpg'
+    # 小头像的文件名
+    s_flname = current_user.username + '/small.jpg'
+    # 保存大头像到指定路径
+    b_im.save(os.path.join(current_app.config['AVATAR_DEST'], b_flname))
+    # 保存小头像到指定路径
+    s_im.save(os.path.join(current_app.config['AVATAR_DEST'], s_flname))
+    current_user.b_avatar = b_flname
+    current_user.s_avatar = s_flname
     return True

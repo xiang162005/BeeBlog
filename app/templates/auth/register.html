@@ -6,9 +6,9 @@
 {% block page_content %}
 <div class="self-form">
     <div class="self-form-head">
-    <a class="self-form-head-text" href="{{ url_for('auth.login') }}" style="margin: 40px;">登陆</a>
-    <span style="font-weight: bolder; font-size: xx-large;">|</span>
-    <a class="self-form-head-text" href="{{ url_for('auth.register') }}" style="margin: 40px;">注册</a>
+    <a class="self-form-head-link" href="{{ url_for('auth.login') }}" style="margin: 40px;">登陆</a>
+    <span style="font-weight: bolder; font-size: xx-large;">-</span>
+    <a class="self-form-head-link" href="{{ url_for('auth.register') }}" style="margin: 40px;">注册</a>
     </div>
     <div class="self-form-body">
     {{ wtf.quick_form(form) }}

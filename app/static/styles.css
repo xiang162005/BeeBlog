@@ -19,11 +19,14 @@ body {
 .self-form-head {
   margin-left: 30px;
 }
+.self-form-head-link,
 .self-form-head-text {
   color: #777; 
+  font-family: cursive;
+  font-weight: bold;
   font-size: 30px;
 }
-.self-form-head-text:hover {
+.self-form-head-link:hover {
   color:  #FF6600; 
 }
 .self-form-body {
