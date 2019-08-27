@@ -1,54 +1,22 @@
 {% extends "base.html" %}
-{% block title %}蜜蜂博客 -个人主页-{% endblock %}
+{% import "_macros.html" as macros %}
+{% block title %}蜜蜂博客 -{% if current_user.name %}{{ current_user.name }}{% else %}{{ current_user.username }}{% endif %}-{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-  {% if current_user.is_administrator() %}
-    <a class="btn btn-danger" href="{{ url_for('main.edit_profile_admin', id=user.id) }}">
-        编辑用户资料 [管理员]
-    </a>
-  {% endif %}
-  <br>
-  <!-- mtime用作查询字符串，修改头像图像时强制刷新头像 -->
-  <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename='avatar/'+user.b_avatar, mtime=mtime) }}"" >
-  <div class="profile-header">
-    <h1>{{ user.username }}</h1>
-    {% if user.name or user.location %}
-    <p>
-      {% if user.name %}昵称：{{ user.name }}{% endif %}
-      <br>
-      {% if user.location %}所在地：{{ user.location }}{% endif %}
-    </p>
-    {% endif %}
-    {% if current_user.is_administrator() %}
-    <p><a href="mailto:{{ user.email }}">邮箱：{{ user.email }}</a></p>
-    {% endif %}
-    {% if user.about_me %}<p>个人简介：{{ user.about_me }}</p>{% endif %}
-    <p>
-      注册时间： {{ moment(user.member_since).format('L') }}
-      <br>
-      上次登陆时间： {{ moment(user.last_login).fromNow() }}
-    </p>
-    {% if current_user.can(Permission.FOLLOW) and user != current_user %}
-      {% if not current_user.is_following(user) %}
-        <a href="{{ url_for('main.follow', username=user.username) }}"
-            class="btn btn-primary">关注</a>
-      {% else %}
-      <a href="{{ url_for('main.unfollow', username=user.username) }}"
-          class="btn btn-default">取消关注</a>
-      {% endif %}
-    {% endif %}
-    <a href="{{ url_for('main.followers', username=user.username) }}">
-      粉丝： <span class="badge">{{ user.follower.count() }}</span>
-    </a>
-    <a href="{{ url_for('main.followed_by', username=user.username) }}">
-      关注的人： <span class="badge">{{ user.followed.count() }}</span>
-    </a>
-    {% if current_user.is_authenticated and user != current_user and 
-        user.is_following(current_user) %}
-        <span class="label labeld-default">关注了我</span>
-    {% endif %}
-  </div>
+{% include '_user.html' %}
+<div class="user-body">
+<ul class="nav nav-tabs" style="width: 68%;">
+    <li role="presentation" class="active"><a href="{{ url_for('main.user', username=user.username) }}">
+        文章 <span class="badge">{{ user.posts.count() }}</span>
+    </a></li>
+    <li role="presentation"><a href="#">
+        关注的人 <span class="badge">{{ user.followed.count() }}</span></a></li>
+    <li role="presentation"><a href="#">
+      粉丝 <span class="badge">{{ user.follower.count() }}</span></a></li>
+  </ul>
 </div>
 {% include '_posts.html' %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, 'main.user', username=user.username)}}
+</div>
 {% endblock %}

@@ -5,7 +5,17 @@
 {% block title %}蜜蜂博客 -首页-{% endblock %}
 
 {% block page_content %}
-{% include '_index.html' %}
+<ul style="margin-left: 300px;margin-bottom: 20px;margin-top: 10px;" class="nav nav-pills">
+    <li role="presentation" ><a href="{{ url_for('main.index') }}">最新</a></li>
+    <li role="presentation" class="active"><a href="{{ url_for('main.index_views') }}">最热</a></li>
+    {% if current_user.can(Permission.FOLLOW) %}
+        <li role="presentation" ><a href="{{ url_for('main.index_followed')}}">关注</a></li>
+    {% endif %}
+    {% if current_user.is_authenticated %}
+        <li role="presentation" ><a href="{{ url_for('main.index_mine')}}">我的</a></li>
+    {% endif %}
+</ul>
+{% include '_posts.html' %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, 'main.index_views')}}
 </div>

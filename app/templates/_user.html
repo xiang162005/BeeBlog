@@ -1,0 +1,38 @@
+<div class="user-head">
+  <!-- mtime用作查询字符串，修改头像图像时强制刷新头像 -->
+  <div user-header-left>
+    <img class="user-head-img" src="{{ url_for('static', filename='avatar/'+user.b_avatar, mtime=mtime) }}"" >
+  </div>
+  <div class="user-head-mid">
+    <div class="user-head-title">
+      <p>{% if user.name %}{{ user.name }}
+      {% else %}{{ user.username }}{% endif %}</p>
+    </div>
+    {% if current_user == user %}
+      <a href="{{ url_for('auth.edit_profile') }}"
+        class="btn btn-primary" style="width: 120px;">编辑个人资料</a>
+    {% elif current_user.can(Permission.FOLLOW) %}
+      {% if not current_user.is_following(user) %}
+        <a href="{{ url_for('main.follow', username=user.username) }}"
+          class="btn btn-primary" style="width: 80px;">关注</a>
+      {% else %}
+        <a href="{{ url_for('main.unfollow', username=user.username) }}"
+            class="btn btn-default" style="width: 80px;">取消关注</a>
+      {% endif %}
+    {% endif %}
+  </div>
+  <div class="user-head-right">
+      <p>
+        {% if user.location %}所在地：{{ user.location }}{% endif %}
+        <br>
+        注册时间： {{ moment(user.member_since).format('L') }}
+        <br>
+        上次登陆时间： {{ moment(user.last_login).fromNow() }}
+        <br>
+        {% if user.about_me %}
+        个人简介: {{ user.about_me }}
+        {% endif %}
+      </p>
+  </div>
+</div>
+
