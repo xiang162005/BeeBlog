@@ -9,7 +9,8 @@ from .. import db
 from ..models import User, Permission, Post, Comment
 from ..decorators import admin_required, permission_required
 
-# 网站主页
+
+# 网站主页(最新)
 @main.route('/')
 def index():
     # 当前页数，默认为1
@@ -22,6 +23,51 @@ def index():
         error_out=False)
     posts = pagination.items
     return render_template('index.html', posts=posts, pagination=pagination)
+
+
+# 网站主页(最热)
+@main.route('/index_views')
+def index_views():
+    # 当前页数，默认为1
+    page = request.args.get('page', 1, type=int)
+    # 每页的文章，per_page为每页显示的文章数量
+    # error_out为False时，当请求页数超出范围时，返回空列表
+    # error_out为True时，当请求页数超出范围时，返回404
+    pagination = Post.query.order_by(Post.views.desc()).paginate(
+        page, per_page=current_app.config['POSTS_PER_PAGE'],
+        error_out=False)
+    posts = pagination.items
+    return render_template('index_views.html', posts=posts, pagination=pagination)
+
+
+# 网站主页(关注)
+@main.route('/index_followed')
+def index_followed():
+    # 当前页数，默认为1
+    page = request.args.get('page', 1, type=int)
+    # 每页的文章，per_page为每页显示的文章数量
+    # error_out为False时，当请求页数超出范围时，返回空列表
+    # error_out为True时，当请求页数超出范围时，返回404
+    pagination = current_user.followed_posts.order_by(Post.ctime.desc()).paginate(
+        page, per_page=current_app.config['POSTS_PER_PAGE'],
+        error_out=False)
+    posts = pagination.items
+    return render_template('index_followed.html', posts=posts, pagination=pagination)
+
+
+# 网站主页(我的)
+@main.route('/index_mine')
+def index_mine():
+    # 当前页数，默认为1
+    page = request.args.get('page', 1, type=int)
+    # 每页的文章，per_page为每页显示的文章数量
+    # error_out为False时，当请求页数超出范围时，返回空列表
+    # error_out为True时，当请求页数超出范围时，返回404
+    pagination = current_user.posts.order_by(Post.ctime.desc()).paginate(
+        page, per_page=current_app.config['POSTS_PER_PAGE'],
+        error_out=False)
+    posts = pagination.items
+    return render_template('index_mine.html', posts=posts, pagination=pagination)
 
 
 # 个人主页
@@ -242,6 +288,23 @@ def followed_posts():
         error_out=False)
     posts = pagination.items
     return render_template('followed_posts.html', posts=posts, pagination=pagination)
+
+
+# 点赞文章
+@main.route('/like/<int:id>')
+@login_required
+@permission_required(Permission.LIKE)
+def like(id):
+    post = Post.query.filter_by(id=id).first()
+    if post is None:
+        flash('文章不存在')
+    else:
+        post.likes += 1
+        db.session.add(post)
+        db.session.commit()
+        flash('点赞成功')
+    return redirect(url_for('main.post', id=id))  
+    
 
 
     

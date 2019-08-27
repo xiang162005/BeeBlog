@@ -95,9 +95,17 @@ div.post-list-footer {
   flex-direction: row;
   border-bottom: 1px solid #777;
 }
-div.post-list-footer span.post-list-footer-text {
+div.post-list-footer span.post-list-footer-number {
   font-size: 17px;
   color: #777;
+}
+div.post-list-footer span.post-list-footer-text {
+  font-size: 15px;
+  color: #777;
+}
+div.post-list-footer span.post-list-footer-text-admin {
+  font-size: 15px;
+  color: red;
 }
 a.post-list-footer-link {
   color: #777;
@@ -107,6 +115,19 @@ a.post-list-footer-link:hover {
   color: black;
 }
 div.post-list-date {
-  margin-left: 330px;
+  position: absolute;
+  margin-left: 505px; 
   color: #777;
 }
+.nav-pills > li > a {
+  color: #FF6600;
+  font-family: cursive;
+  font-size: 20px;
+  font-weight: bold;
+}
+.nav-pills > li > a:hover,
+.nav-pills > li > a:focus {
+  color: #FF6600;
+  background-color: #ddd;
+}
+

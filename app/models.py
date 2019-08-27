@@ -21,6 +21,8 @@ class Permission:
     MODERATE = 8
     # 管理网站
     ADMIN = 16
+    # 点赞文章
+    LIKE = 32
 
 # 角色表
 class Role(db.Model):
@@ -65,14 +67,14 @@ class Role(db.Model):
         # 定义各角色权限的字典
         roles_dic = {
             # 普通用户：具有关注、评论、写文章的权限
-            'User': [Permission.FOLLOW, Permission.COMMENT, Permission.WRITE,],
+            'User': [Permission.FOLLOW, Permission.COMMENT, Permission.WRITE, Permission.LIKE],
             # 协管员：具有关注、评论、写文章、管理评论的权限
             'Moderator': [Permission.FOLLOW, Permission.COMMENT,
-                          Permission.WRITE, Permission.MODERATE],
+                          Permission.WRITE, Permission.MODERATE, Permission.LIKE],
             # 管理员：具有关注、评论、写文章、管理评论、管理网站的权限
             'Administrator': [Permission.FOLLOW, Permission.COMMENT,
                               Permission.WRITE, Permission.MODERATE,
-                              Permission.ADMIN]
+                              Permission.ADMIN, Permission.LIKE]
         }
         # 默认角色为普通用户
         default_role = 'User'

@@ -1,0 +1,9 @@
+<ul style="margin-left: 300px;margin-bottom: 20px;margin-top: 10px;" class="nav nav-pills">
+    <li role="presentation" ><a href="{{ url_for('main.index') }}">最新</a></li>
+    <li role="presentation" ><a href="{{ url_for('main.index_views') }}">最热</a></li>
+    <li role="presentation" ><a href="{{ url_for('main.index_followed')}}">关注</a></li>
+    <li role="presentation" ><a href="{{ url_for('main.index_mine')}}">我的</a></li>
+</ul>
+{% include '_posts.html' %}
+
+

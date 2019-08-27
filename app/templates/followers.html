@@ -13,7 +13,7 @@
     <tr>
         <td>
             <a href="{{ url_for('main.user', username = follow.user.username) }}">
-                <img class="img-rounded" src="{{ url_for('static', filename='avatar/'+follow.user.avatar) }}">
+                <img class="img-rounded" src="{{ url_for('static', filename='avatar/'+follow.user.s_avatar) }}">
                 {{ follow.user.username }}
             </a>
         </td>
