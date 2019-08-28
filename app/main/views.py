@@ -212,7 +212,7 @@ def post(id):
     post.views += 1
     db.session.add(post)
     db.session.commit()
-    return render_template('post.html', posts=[post], form=form, title=post.title,
+    return render_template('post.html', post=post, form=form,
                             comments=comments, pagination=pagination)
 
 

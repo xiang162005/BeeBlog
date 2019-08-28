@@ -40,7 +40,7 @@
         <div class="post-list-footer">
           <span style="margin-bottom: 20px;" class="glyphicon glyphicon-eye-open" aria-hidden="true">
             <span class="post-list-footer-number">{{ post.views }}</span></span>
-          <span style="margin-left: 30px;margin-bottom: 20px;" class="glyphicon glyphicon-envelope" aria-hidden="true">
+          <span style="margin-left: 30px;margin-bottom: 20px;" class="glyphicon glyphicon-comment" aria-hidden="true">
             <span class="post-list-footer-number">{{ post.comments.count() }}</span></span>
           <span style="margin-left: 30px;margin-bottom: 20px;" class="glyphicon glyphicon-thumbs-up" aria-hidden="true">
             <span class="post-list-footer-number">{{ post.likes }}</span></span>
@@ -50,7 +50,7 @@
               <span class="post-list-footer-text-admin">编辑[管理员]</span></span>
             </a>
           {% endif %}
-          <div class="post-list-date">发表于 {{ moment(post.ctime).format('L') }}</div>
+          <div class="post-list-date">发表于 {{ moment(post.ctime).format('LL') }}</div>
         </div>
     </li>
     {% endfor %}

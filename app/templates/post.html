@@ -2,10 +2,49 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
 
-{% block title %}蜜蜂博客 -{{ title }}-{% endblock %}
+{% block title %}蜜蜂博客 -{{ post.title }}-{% endblock %}
 
 {% block page_content %}
-{% include '_posts.html' %}
+<div class="post-head">
+  <div class="post-title">
+      {{ post.title }}
+  </div>
+  <div class="post-auth">
+    <div class="post-auth-left">
+        <img class="auth-img"
+        src="{{ url_for('static', filename='avatar/'+post.author.s_avatar) }}">
+    </div>
+    <div class="post-auth-mid">
+        <div class="post-auth-name">
+          {{ post.author.name }}
+        </div>
+        <div class="post-auth-text">
+            <p>
+                {{ moment(post.ctime).format('LL') }}&ensp;
+                阅读&ensp;{{ post.views }}&ensp;|
+                &ensp;评论&ensp;{{ post.comments.count() }}&ensp;
+                |&ensp;点赞&ensp;{{ post.likes }}
+            </p>
+        </div>
+    </div>
+    <div class="post-auth-right">
+      {%if current_user == post.author %}
+        <a href="{{ url_for('main.edit', id=post.id) }}"
+          class="btn btn-primary" style="width: 80px;">编辑文章</a>
+        {% elif current_user.can(Permission.FOLLOW) %}
+          {% if not current_user.is_following(post.author) %}
+            <a href="{{ url_for('main.follow', username=post.author.username) }}"
+              class="btn btn-primary" style="width: 80px;">关注</a>
+          {% else %}
+            <a href="{{ url_for('main.unfollow', username=post.author.username) }}"
+              class="btn btn-default" style="width: 80px;">取消关注</a>
+          {% endif %}
+        {% endif %}
+    </div>
+  </div>
+</div>
+
+
 <h4 id="comments">Comments</h4>
 {% if current_user.can(Permission.COMMENT) %}
 <div class="comment-form">
@@ -16,7 +55,7 @@
 {% if pagination %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, 'main.post', fragment="#comments",
-       id=posts[0].id) }}
+       id=post.id) }}
 </div>
 {% endif %}
 {% endblock %}

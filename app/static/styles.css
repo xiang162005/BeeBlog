@@ -380,3 +380,40 @@ div.follow-list-right {
   margin-left: 600px; 
 
 }
+div.post-head {
+  padding: 0px;
+  margin: 1px 0px 0px 12%;
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #ddd;
+}
+div.post-title {
+  font-size: 40px;
+  font-weight: bold;
+}
+div.post-auth {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+}
+div.post-auth-mid {
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+}
+div.post-auth-name {
+  font-size: 20px;
+  display: flex;
+  flex-direction: row;
+}
+div.post-auth-text {
+  color: #777;
+  font-size: 15px;
+}
+div.post-auth-right {
+  margin-top: 10px;
+  position: absolute;
+  margin-left: 600px; 
+}
