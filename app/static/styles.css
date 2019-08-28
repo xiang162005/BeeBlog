@@ -417,3 +417,53 @@ div.post-auth-right {
   position: absolute;
   margin-left: 600px; 
 }
+div.post-content {
+  margin: 20px 0px 0px 12%;
+  width: 60%;
+  border-bottom: 1px solid #ddd;
+}
+div.post-body {
+  margin-bottom: 20px;
+}
+div.post-bottom {
+  margin: 20px 0px 20px 12%;
+  width: 60%;
+}
+div.comment-form {
+  width: 60%;
+}
+div.comments-head {
+  margin-top: 30px;
+  border-bottom: 1px solid #ddd;
+}
+p.comments-head-text {
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: bold;
+}
+ul.comments-content {
+  list-style-type: none;
+  padding: 0px;
+}
+li.comment {
+  margin-top: 20px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+div.comment-head {
+  display: flex;
+  flex-direction: row;
+}
+div.comment-head-right {
+  margin-left: 20px;
+}
+p.comment-head-text {
+  font-size: 13px;
+  color: #777;
+}
+div.comment-body {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+

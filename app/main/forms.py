@@ -51,5 +51,5 @@ class PostForm(FlaskForm):
 
 # 写评论表单
 class CommentForm(FlaskForm):
-    body = StringField('', validators=[DataRequired()])
-    submit = SubmitField('保存')
+    body = PageDownField('', validators=[DataRequired()])
+    submit = SubmitField('评论')
