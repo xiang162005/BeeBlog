@@ -6,7 +6,7 @@ from flask_login import current_user, login_required
 from . import main
 from .forms import EditProfileAdminForm, PostForm, CommentForm
 from .. import db
-from ..models import User, Permission, Post, Comment
+from ..models import User, Permission, Post, Comment, Follow
 from ..decorators import admin_required, permission_required
 
 
@@ -85,7 +85,7 @@ def user(username):
     return render_template('user.html', user=user, mtime=mtime, posts=posts, pagination=pagination)
 
 
-# 关注的人的列表
+# 个人主页（关注的人）
 @main.route('/user_followed_by/<username>')
 def user_followed_by(username):
     user = User.query.filter_by(username=username).first()
@@ -93,18 +93,18 @@ def user_followed_by(username):
         flash('没有此用户')
         return redirect(url_for('main.index'))
     page = request.args.get('page', 1, type=int)
-    pagination = user.followed.paginate(
+    pagination = user.followed.order_by(Follow.timestamp.desc()).paginate(
         page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
         error_out=False)
-    follows = [item.follower for item in pagination.items]
-    return render_template('followers.html', user=user, title="关注的用户列表",
-                           endpoint='main.followers', pagination=pagination,
+    follows = [item.followed for item in pagination.items]
+    return render_template('followed.html', user=user,
+                           endpoint='main.user_followed_by', pagination=pagination,
                            follows=follows)
 
 
-# 粉丝列表
-@main.route('/followers/<username>')
-def followers(username):
+# 个人主页（粉丝）
+@main.route('/user_followers/<username>')
+def user_followers(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('没有此用户')
@@ -113,32 +113,10 @@ def followers(username):
     pagination = user.follower.paginate(
         page, per_page=current_app.config['FOLLOWERS_PER_PAGE'],
         error_out=False)
-    follows = [{'user': item.follower, 'timestamp': item.timestamp}
-               for item in pagination.items]
-    return render_template('followers.html', user=user, title="的粉丝列表",
-                           endpoint='main.followers', pagination=pagination,
+    follows = [item.follower for item in pagination.items]
+    return render_template('follower.html', user=user,
+                           endpoint='main.user_followers', pagination=pagination,
                            follows=follows)
-
-
-# 我的关注页面
-@main.route('/followed_posts')
-@login_required
-def followed_posts():
-    # 我关注的用户的文章
-    q1 = current_user.followed_posts
-    # 我写的文章
-    q2 = current_user.posts
-    # 关注的用户的文章加上我写的文章
-    query = q1.union(q2)
-    page = request.args.get('page', 1, type=int)
-    pagination = query.order_by(Post.ctime.desc()).paginate(
-        page, per_page=current_app.config['POSTS_PER_PAGE'],
-        error_out=False)
-    posts = pagination.items
-    return render_template('followed_posts.html', posts=posts, pagination=pagination)
-
-
-
 
 
 # 管理员编辑用户个人资料界面
@@ -274,8 +252,11 @@ def follow(username):
         return redirect(url_for('main.user', username=username))
     current_user.follow(user)
     db.session.commit()
-    flash('成功关注{}'.format(username))
-    return redirect(url_for('main.user', username=username))
+    if user.name:
+        flash('成功关注{}'.format(user.name))
+    else:
+        flash('成功关注{}'.format(user.username))
+    return redirect(request.referrer)
 
 
 # 取消关注用户
@@ -292,8 +273,11 @@ def unfollow(username):
         return redirect(url_for('main.user', username=username))
     current_user.unfollow(user)
     db.session.commit()
-    flash('成功取消关注{}'.format(username))
-    return redirect(url_for('main.user', username=username))
+    if user.name:
+        flash('取消关注{}'.format(user.name))
+    else:
+        flash('取消关注{}'.format(user.username))
+    return redirect(request.referrer)
 
 
 # 点赞文章

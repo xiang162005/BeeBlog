@@ -62,7 +62,7 @@ div.post-list-abstract {
 div.post-list-mid {
   margin-top: 30px;
 }
-div.post-list-mid img.auth-img {
+img.auth-img {
   border-radius: 50%;
   width: 100%;
 }
@@ -341,4 +341,42 @@ fieldset[disabled] .btn-default.focus {
 .btn-default .badge {
   color: #fff;
   background-color: #FF6600;
+}
+ul.follows {
+  list-style-type: none;
+  padding: 0px;
+  margin: 1px 0px 0px 12%;
+  width: 60%;
+}
+li.follow-list {
+  height: 7%;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid #ddd;
+}
+div.follow-list-left {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+div.follow-list-mid {
+  margin-top: 10px;
+  margin-left: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+div.follow-list-mid-name {
+  font-size: 15px;
+  font-weight: bold;
+}
+div.follow-list-text {
+  font-size: 12px;
+  color: #777;
+}
+div.follow-list-right {
+  margin-top: 20px;
+  position: absolute;
+  margin-left: 600px; 
+
 }

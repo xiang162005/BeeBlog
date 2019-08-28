@@ -6,17 +6,17 @@
 {% include '_user.html' %}
 <div class="user-body">
 <ul class="nav nav-tabs" style="width: 68%;">
-    <li role="presentation" class="active"><a href="{{ url_for('main.user', username=user.username) }}">
+    <li role="presentation"><a href="{{ url_for('main.user', username=user.username) }}">
         文章 <span class="badge">{{ user.posts.count() }}</span>
     </a></li>
-    <li role="presentation"><a href="{{ url_for('main.user_followed_by', username=user.username) }}">
+    <li role="presentation" class="active"><a href="{{ url_for('main.user_followed_by', username=user.username) }}">
         关注的人 <span class="badge">{{ user.followed.count() }}</span></a></li>
     <li role="presentation"><a href="{{ url_for('main.user_followers', username=user.username) }}">
       粉丝 <span class="badge">{{ user.follower.count() }}</span></a></li>
   </ul>
 </div>
-{% include '_posts.html' %}
+{% include '_follow.html' %}
 <div class="pagination">
-    {{ macros.pagination_widget(pagination, 'main.user', username=user.username)}}
+    {{ macros.pagination_widget(pagination, endpoint, username = user.username) }}
 </div>
 {% endblock %}

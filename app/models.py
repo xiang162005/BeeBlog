@@ -138,14 +138,14 @@ class User(UserMixin, db.Model):
     s_avatar = db.Column(db.String(128), default='default/small.jpg')
     # 用户发表的文章
     posts = db.relationship('Post', backref='author', lazy='dynamic')
-    # 关注者（关注我的人）
+    # 我的粉丝（关注我的人）
     follower = db.relationship('Follow',
                                 foreign_keys=[Follow.followed_id],
                                 backref=db.backref('followed', lazy='joined'),
                                 lazy='dynamic',
                                 # 启动所有层叠选项，删除孤儿记录
                                 cascade='all, delete-orphan')
-    # 被关注者（被我关注的人）
+    # 我关注的人
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
                                backref=db.backref('follower', lazy='joined'),

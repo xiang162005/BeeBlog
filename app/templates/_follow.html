@@ -1,0 +1,34 @@
+<ul class="follows">
+  {% for follow in follows %}
+    <li class="follow-list">
+      <div class="follow-list-left">
+        <img class="auth-img"
+          src="{{ url_for('static', filename='avatar/'+follow.s_avatar) }}">
+      </div>
+      <div class="follow-list-mid">
+        <div class="follow-list-mid-name">
+            {% if follow.name %}{{ follow.name }}
+            {% else %}{{ follow.username }}{% endif %}
+        </div>
+        <div class="follow-list-text">
+            <p>
+                文章&nbsp;{{ follow.posts.count() }}
+                &emsp;|&emsp;粉丝&nbsp;{{ follow.follower.count() }}
+                &emsp;|&emsp;关注&nbsp;{{ follow.followed.count() }}
+            </p>
+        </div>
+      </div>
+      <div class="follow-list-right">
+        {% if current_user != follow and current_user.can(Permission.FOLLOW) %}
+            {% if not current_user.is_following(follow) %}
+            <a href="{{ url_for('main.follow', username=follow.username) }}"
+            class="btn btn-primary" style="width: 80px;">关注</a>
+            {% else %}
+            <a href="{{ url_for('main.unfollow', username=follow.username) }}"
+            class="btn btn-default" style="width: 80px;">取消关注</a>
+            {% endif %}
+        {% endif %}
+      </div>   
+    </li>
+  {% endfor %}
+</ul>
