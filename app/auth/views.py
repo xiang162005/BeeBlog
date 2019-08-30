@@ -181,7 +181,7 @@ def change_email(token):
     return redirect(url_for('main.index'))
 
 
-# 个人资料
+# 编辑个人资料
 @auth.route('/editprofile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
@@ -192,12 +192,13 @@ def edit_profile():
         current_user.about_me = form.about_me.data
         # 提交用户头像
         avatar = request.files['avatar']
-        if not create_avatar(avatar):
-            flash('文件类型错误')
-            return redirect(url_for('main.user', username=current_user.username))
+        if avatar:
+            if not create_avatar(avatar):
+                flash('文件类型错误')
+                return redirect(url_for('main.user', username=current_user.username))
         db.session.add(current_user)
         db.session.commit()
-        flash('您的个人资料已更新')
+        flash('您的个人资料已更新，如头像未更新，请刷新浏览器以显示新的头像')
         return redirect(url_for('main.user', username=current_user.username))
     form.avatar.data = os.path.join(current_app.config['AVATAR_DEST'], current_user.b_avatar)
     form.name.data = current_user.name

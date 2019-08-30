@@ -415,7 +415,7 @@ div.post-auth-text {
 div.post-auth-right {
   margin-top: 10px;
   position: absolute;
-  margin-left: 600px; 
+  margin-left: 500px; 
 }
 div.post-content {
   margin: 20px 0px 0px 12%;
@@ -466,4 +466,9 @@ div.comment-body {
   margin-top: 20px;
   margin-bottom: 20px;
 }
-
+.write-body-see {
+  width: 550px;
+  height: 550px;
+  background-color: #eee;
+  border: 1px solid #eee;
+}

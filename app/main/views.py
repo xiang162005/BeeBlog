@@ -5,8 +5,9 @@ from flask import render_template, redirect, request, url_for, flash, \
 from flask_login import current_user, login_required
 from . import main
 from .forms import EditProfileAdminForm, PostForm, CommentForm
+from .post import create_abstract
 from .. import db
-from ..models import User, Permission, Post, Comment, Follow
+from ..models import User, Permission, Post, Comment, Follow, View, PostLike
 from ..decorators import admin_required, permission_required
 
 
@@ -74,15 +75,12 @@ def index_mine():
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    # 用户头像的修改时间
-    mtime = str(os.path.getmtime(os.path.join(current_app.config['AVATAR_DEST'], user.b_avatar)))
     page = request.args.get('page', 1, type=int)
     pagination = Post.query.filter_by(author=user).order_by(Post.ctime.desc()).paginate(
         page, per_page=current_app.config['POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
-    # mtime用作查询字符串，头像修改时，强制刷新头像图片
-    return render_template('user.html', user=user, mtime=mtime, posts=posts, pagination=pagination)
+    return render_template('user.html', user=user, posts=posts, pagination=pagination)
 
 
 # 个人主页（关注的人）
@@ -169,15 +167,10 @@ def write():
     if current_user.can(Permission.WRITE) and form.validate_on_submit():
         post = Post(title=form.title.data, body=form.body.data,
                     author=current_user._get_current_object())
-        # 如果文章过短，则摘要为全文，否则在摘要最后加上省略号
-        try:
-            form.body.data[60]
-        except IndexError:
-            post.abstract = form.body.data
-        else:
-            post.abstract = form.body.data[0:60] + '...'
         db.session.add(post)
         db.session.commit()
+        # 生成摘要
+        create_abstract(post.id)
         flash('保存成功')
         return redirect(url_for('main.index'))
     return render_template('write.html', form=form)
@@ -209,7 +202,10 @@ def post(id):
         page, per_page=current_app.config['COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
-    post.views += 1
+    # 如果用户之前没有读过这篇文章，那么文章阅读者中加入用户
+    if not current_user.is_viewed(post.id):
+        view = View(post_id=post.id, viewer_id=current_user.id)
+        db.session.add(view)
     db.session.add(post)
     db.session.commit()
     return render_template('post.html', post=post, form=form,
@@ -228,14 +224,14 @@ def edit(id):
     if form.validate_on_submit():
         post.title = form.title.data
         post.body = form.body.data
-        post.abstract = form.body.data[0:64]
         db.session.add(post)
         db.session.commit()
+        create_abstract(post.id)
         flash('文章已更新')
         return redirect(url_for('main.post', id=post.id))
     form.title.data = post.title
     form.body.data = post.body
-    return render_template('edit_post.html', form=form)
+    return render_template('write.html', post=post, form=form)
 
 
 # 关注用户
@@ -281,18 +277,36 @@ def unfollow(username):
 
 
 # 点赞文章
-@main.route('/like/<int:id>')
+@main.route('/post_like/<int:id>')
 @login_required
 @permission_required(Permission.LIKE)
-def like(id):
+def post_like(id):
     post = Post.query.filter_by(id=id).first()
     if post is None:
         flash('文章不存在')
+    elif current_user.is_post_liked(id):
+        flash('您已经点赞过这篇文章')
     else:
-        post.likes += 1
-        db.session.add(post)
+        current_user.post_like(id)
         db.session.commit()
         flash('点赞成功')
+    return redirect(url_for('main.post', id=id))
+
+
+# 取消点赞文章
+@main.route('/post_unlike/<int:id>')
+@login_required
+@permission_required(Permission.LIKE)
+def post_unlike(id):
+    post = Post.query.filter_by(id=id).first()
+    if post is None:
+        flash('文章不存在')
+    elif not current_user.is_post_liked(id):
+        flash('您还未点赞过这篇文章')
+    else:
+        current_user.post_unlike(id)
+        db.session.commit()
+        flash('取消点赞成功')
     return redirect(url_for('main.post', id=id))  
     
 

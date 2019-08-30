@@ -39,11 +39,11 @@
         <!-- 文章尾部，包括阅读数、评论数、点赞数 -->
         <div class="post-list-footer">
           <span style="margin-bottom: 20px;" class="glyphicon glyphicon-eye-open" aria-hidden="true">
-            <span class="post-list-footer-number">{{ post.views }}</span></span>
+            <span class="post-list-footer-number">{{ post.views.count() }}</span></span>
           <span style="margin-left: 30px;margin-bottom: 20px;" class="glyphicon glyphicon-comment" aria-hidden="true">
             <span class="post-list-footer-number">{{ post.comments.count() }}</span></span>
           <span style="margin-left: 30px;margin-bottom: 20px;" class="glyphicon glyphicon-thumbs-up" aria-hidden="true">
-            <span class="post-list-footer-number">{{ post.likes }}</span></span>
+            <span class="post-list-footer-number">{{ post.likes.count() }}</span></span>
           {% if current_user.is_administrator() %}
             <a class="post-list-footer-link" href="{{ url_for('main.edit', id=post.id) }}">
               <span style="margin-left: 30px;" class="glyphicon glyphicon-pencil" aria-hidden="true">

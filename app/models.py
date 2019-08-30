@@ -154,6 +154,10 @@ class User(UserMixin, db.Model):
                                cascade='all, delete-orphan')
     # 评论
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
+    # 阅读过的文章
+    viewed_posts = db.relationship('View', backref='viewer', lazy='dynamic')
+    # 点赞过的文章
+    liked_posts = db.relationship('PostLike', backref='liker', lazy='dynamic')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -287,6 +291,32 @@ class User(UserMixin, db.Model):
         return Post.query.join(Follow, Follow.followed_id == Post.author_id)\
             .filter(Follow.follower_id == self.id)
 
+    # 用户是否阅读过该文章
+    def is_viewed(self, post_id):
+        view = self.viewed_posts.filter_by(post_id=post_id).first()
+        if view:
+            return True
+        return False
+
+    # 用户是否点赞过该文章
+    def is_post_liked(self, post_id):
+        like = self.liked_posts.filter_by(post_id=post_id).first()
+        if like:
+            return True
+        return False
+
+    # 点赞文章
+    def post_like(self, id):
+        if not self.is_post_liked(id):
+            like = PostLike(post_id=id, liker_id=self.id)
+            db.session.add(like)
+
+    # 取消关注用户
+    def post_unlike(self, id):
+        unlike = self.liked_posts.filter_by(post_id=id).first()   
+        if unlike:
+            db.session.delete(unlike)
+
     def __repr__(self):
         return '<User {}>'.format(self.username) 
 
@@ -326,10 +356,10 @@ class Post(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # 评论
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
-    # 观看数
-    views = db.Column(db.Integer, default=0)
-    # 点赞数
-    likes = db.Column(db.Integer, default=0)
+    # 阅读者
+    views = db.relationship('View', backref='post', lazy='dynamic')
+    # 点赞者
+    likes = db.relationship('PostLike', backref='post', lazy='dynamic')
 
     # 把Markdown文本转化成html
     @staticmethod
@@ -344,9 +374,24 @@ class Post(db.Model):
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True))
 
-
 # 监听程序，Post.body有改动就运行Post.on_change_body
 db.event.listen(Post.body, 'set', Post.on_change_body)
+
+
+# 文章阅读者表
+class View(db.Model):
+    __tablename__ = 'views'
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+    viewer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+
+# 文章点赞表
+class PostLike(db.Model):
+    __tablename__ = 'post_likes'
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+    liker_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
 # 评论表

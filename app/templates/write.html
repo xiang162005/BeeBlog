@@ -4,11 +4,31 @@
 {% block title %}蜜蜂博客 -开始创作-{% endblock %}
 
 {% block page_content %}
-<div>
-    {% if current_user.can(Permission.WRITE) %}
-    {{ wtf.quick_form(form) }}
-    {% endif %}
-</div>
+  {% if current_user.can(Permission.WRITE) %}  
+    <div >
+      <form action="" method="post" class="form" role="form">
+        {{ form.hidden_tag() }}
+          <div class="form-group  required">
+            {{ form.title(id="title", class="form-control", placeholder=form.title.label.text )}}
+          </div>
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-6">
+                {{ form.body(only_input=True, class="form-control", style="width: 550px; height: 550px;", placeholder=form.body.label.text) }}
+              </div>
+              <div class="col-md-6">
+                <div class="write-body-see">
+                {{ form.body(only_preview=True) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        <div class="form-group">
+          {{ form.submit(class="btn btn-default") }}
+        </div>    
+      </form>
+    </div>
+  {% endif %}
 {% endblock %}
 
 <!-- 富文本显示器 -->

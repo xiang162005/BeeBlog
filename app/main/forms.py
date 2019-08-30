@@ -44,9 +44,9 @@ class EditProfileAdminForm(FlaskForm):
 
 # 写文章表单
 class PostForm(FlaskForm):
-    title = StringField('标题', validators=[DataRequired()])
-    body = PageDownField('正文', validators=[DataRequired()])
-    submit = SubmitField('保存')
+    title = StringField('请写下你的标题...', validators=[DataRequired()])
+    body = PageDownField('本编辑器支持markdown语法\n请开始你的创作...', validators=[DataRequired()])
+    submit = SubmitField('发表')
 
 
 # 写评论表单

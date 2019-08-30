@@ -21,25 +21,32 @@
         <div class="post-auth-text">
             <p>
                 {{ moment(post.ctime).format('LL') }}&ensp;
-                阅读&ensp;{{ post.views }}&ensp;|
+                阅读&ensp;{{ post.views.count() }}&ensp;|
                 &ensp;评论&ensp;{{ post.comments.count() }}&ensp;
-                |&ensp;点赞&ensp;{{ post.likes }}
+                |&ensp;点赞&ensp;{{ post.likes.count() }}
             </p>
         </div>
     </div>
     <div class="post-auth-right">
+      {% if not current_user.is_post_liked(post.id) %}
+        <a href="{{ url_for('main.post_like', id=post.id) }}"
+          class="btn btn-primary" style="width: 80px;margin-right: 20px;">点赞此文</a>
+      {% else %}
+      <a href="{{ url_for('main.post_unlike', id=post.id) }}"
+          class="btn btn-default" style="width: 80px;margin-right: 20px;">取赞此文</a>
+      {% endif %}
       {%if current_user == post.author %}
         <a href="{{ url_for('main.edit', id=post.id) }}"
           class="btn btn-primary" style="width: 80px;">编辑文章</a>
-        {% elif current_user.can(Permission.FOLLOW) %}
-          {% if not current_user.is_following(post.author) %}
-            <a href="{{ url_for('main.follow', username=post.author.username) }}"
-              class="btn btn-primary" style="width: 80px;">关注</a>
-          {% else %}
+      {% elif current_user.can(Permission.FOLLOW) %}
+        {% if not current_user.is_following(post.author) %}
+          <a href="{{ url_for('main.follow', username=post.author.username) }}"
+            class="btn btn-primary" style="width: 80px;">关注</a>
+        {% else %}
             <a href="{{ url_for('main.unfollow', username=post.author.username) }}"
               class="btn btn-default" style="width: 80px;">取消关注</a>
-          {% endif %}
         {% endif %}
+      {% endif %}
     </div>
   </div>
 </div>
