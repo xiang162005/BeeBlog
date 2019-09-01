@@ -34,7 +34,7 @@ def index_views():
     # 每页的文章，per_page为每页显示的文章数量
     # error_out为False时，当请求页数超出范围时，返回空列表
     # error_out为True时，当请求页数超出范围时，返回404
-    pagination = Post.query.order_by(Post.views.desc()).paginate(
+    pagination = Post.query.order_by(Post.views_count.desc()).paginate(
         page, per_page=current_app.config['POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
@@ -187,8 +187,6 @@ def post(id):
                           author=current_user._get_current_object())
         db.session.add(comment)
         flash('成功发表评论')
-        # 抵消重定向导致的文章被观看数+1
-        post.views -= 1
         db.session.add(post)
         db.session.commit()
         # page=-1为最后一页评论，以便显示刚提交的评论
@@ -202,9 +200,10 @@ def post(id):
         page, per_page=current_app.config['COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
-    # 如果用户之前没有读过这篇文章，那么文章阅读者中加入用户
+    # 如果用户之前没有读过这篇文章，那么文章阅读者中加入用户，文章阅读数+1
     if not current_user.is_viewed(post.id):
         view = View(post_id=post.id, viewer_id=current_user.id)
+        post.views_count += 1
         db.session.add(view)
     db.session.add(post)
     db.session.commit()

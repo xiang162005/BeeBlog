@@ -356,9 +356,11 @@ class Post(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # 评论
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
-    # 阅读者
+    # 阅读记录
     views = db.relationship('View', backref='post', lazy='dynamic')
-    # 点赞者
+    # 阅读数
+    views_count = db.Column(db.Integer, default=0)
+    # 点赞记录
     likes = db.relationship('PostLike', backref='post', lazy='dynamic')
 
     # 把Markdown文本转化成html

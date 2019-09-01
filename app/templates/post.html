@@ -21,7 +21,7 @@
         <div class="post-auth-text">
             <p>
                 {{ moment(post.ctime).format('LL') }}&ensp;
-                阅读&ensp;{{ post.views.count() }}&ensp;|
+                阅读&ensp;{{ post.views_count }}&ensp;|
                 &ensp;评论&ensp;{{ post.comments.count() }}&ensp;
                 |&ensp;点赞&ensp;{{ post.likes.count() }}
             </p>
