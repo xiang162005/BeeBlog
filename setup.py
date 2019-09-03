@@ -1,5 +1,5 @@
 import os
-from flask_migrate import Migrate
+from flask_migrate import Migrate, upgrade
 from app import create_app, db
 from app.models import Role, User
 
@@ -25,3 +25,13 @@ def test():
     # verbosity=2是指测试结果的输出的详细程度，有0-6级
     unittest.TextTestRunner(verbosity=2).run(tests)
 
+
+# 配置部署命令
+@manager.command
+def deploy():
+    """Run deployment tasks."""
+    # 把数据库迁移到最新修订版本
+    upgrade()
+
+    # 创建或更新用户角色
+    Role.insert_roles()

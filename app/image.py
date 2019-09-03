@@ -33,6 +33,8 @@ def create_avatar(avatar):
     b_flname = current_user.username + '/big.jpg'
     # 小头像的文件名
     s_flname = current_user.username + '/small.jpg'
+    if not os.path.isdir(os.path.join(current_app.config['AVATAR_DEST'], current_user.username)):
+        os.mkdir(os.path.join(current_app.config['AVATAR_DEST'], current_user.username))
     # 保存大头像到指定路径
     b_im.save(os.path.join(current_app.config['AVATAR_DEST'], b_flname))
     # 保存小头像到指定路径

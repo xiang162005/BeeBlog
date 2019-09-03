@@ -53,6 +53,29 @@ class TestingConfig(Config):
 # 生产环境配置
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
+    # 应用出错时发送电子邮件
+    @classmethod
+    def init_app(cls, app):
+        Config.init_app(app)
+
+        # 出错时邮件通知管理员
+        import logging
+        from logging.handlers import SMTPHandler
+        credentials = None
+        secure = None
+        if getattr(cls, 'MAIL_USERNAME', None) is not None:
+            credentials = (cls.MAIL_USERNAME, cls.MAIL_PASSWORD)
+            if getattr(cls, 'MAIL_USE_SSL', None):
+                secure = ()
+        mail_handler = SMTPHandler(
+            mailhost=(cls.MAIL_SERVER, cls.MAIL_PORT),
+            fromaddr=cls.MAIL_SENDER,
+            toaddrs=[cls.MAIL_ADMIN],
+            subject=cls.MAIL_SUBJECT_PREFIX + '程序错误',
+            credentials=credentials,
+            secure=secure)
+        mail_handler.setLevel(logging.ERROR)
+        app.logger.addHandler(mail_handler)
     
 
 
@@ -64,3 +87,4 @@ configdic = {
     # 默认环境为开发环境
     'default': DevelopmentConfig
 }
+

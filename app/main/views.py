@@ -5,8 +5,8 @@ from flask import render_template, redirect, request, url_for, flash, \
 from flask_login import current_user, login_required
 from . import main
 from .forms import EditProfileAdminForm, PostForm, CommentForm
-from ..post import create_abstract
 from .. import db
+from ..post import create_abstract
 from ..models import User, Permission, Post, Comment, Follow, View, PostLike
 from ..decorators import admin_required, permission_required
 
