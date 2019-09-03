@@ -27,7 +27,7 @@ def test():
 
 
 # 配置部署命令
-@manager.command
+@app.cli.command()
 def deploy():
     """Run deployment tasks."""
     # 把数据库迁移到最新修订版本
