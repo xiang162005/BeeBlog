@@ -200,11 +200,12 @@ def post(id):
         page, per_page=current_app.config['COMMENTS_PER_PAGE'],
         error_out=False)
     comments = pagination.items
-    # 如果用户之前没有读过这篇文章，那么文章阅读者中加入用户，文章阅读数+1
-    if not current_user.is_viewed(post.id):
-        view = View(post_id=post.id, viewer_id=current_user.id)
-        post.views_count += 1
-        db.session.add(view)
+    # 如果登陆的用户之前没有读过这篇文章，那么文章阅读者中加入用户，文章阅读数+1
+    if current_user.is_authenticated:
+        if not current_user.is_viewed(post.id):
+            view = View(post_id=post.id, viewer_id=current_user.id)
+            post.views_count += 1
+            db.session.add(view)
     db.session.add(post)
     db.session.commit()
     return render_template('post.html', post=post, form=form,

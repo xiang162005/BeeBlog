@@ -28,6 +28,7 @@
         </div>
     </div>
     <div class="post-auth-right">
+    {% if current_user.is_authenticated %}
       {% if not current_user.is_post_liked(post.id) %}
         <a href="{{ url_for('main.post_like', id=post.id) }}"
           class="btn btn-primary" style="width: 80px;margin-right: 20px;">点赞此文</a>
@@ -47,6 +48,7 @@
               class="btn btn-default" style="width: 80px;">取消关注</a>
         {% endif %}
       {% endif %}
+    {% endif %}  
     </div>
   </div>
 </div>
